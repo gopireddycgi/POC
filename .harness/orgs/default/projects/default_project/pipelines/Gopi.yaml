@@ -59,7 +59,7 @@ pipeline:
                   identifier: demorunn
                   spec:
                     connectorRef: dockerregistery
-                    image: python-3.11
+                    image: python:3.11
                     shell: Sh
                     command: |-
                       pip install -r requirements.txt
