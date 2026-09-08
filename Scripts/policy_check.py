@@ -19,6 +19,6 @@ if actual_score < required_score:
     print("FAILED: Deployment Blocked")
     sys.exit(1)
  
-print("PASSED: Deployment Approved") 
+print("PASSED: Deployment Approved")
  
  
