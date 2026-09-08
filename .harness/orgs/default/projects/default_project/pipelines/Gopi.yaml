@@ -6,25 +6,77 @@ pipeline:
   tags: {}
   stages:
     - stage:
-        name: Gopi
-        identifier: Gopi
+        name: Jhanu
+        identifier: Jhanu
         description: ""
-        type: Custom
+        type: CI
         spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: minikube
+              namespace: resilience-demo
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
           execution:
             steps:
               - step:
-                  type: ShellScript
-                  name: ShellScript_1
-                  identifier: ShellScript_1
+                  type: GitClone
+                  name: demo
+                  identifier: demo
                   spec:
-                    shell: Bash
-                    executionTarget: {}
-                    source:
-                      type: Inline
+                    connectorRef: pocconnecter
+                    build:
+                      type: branch
                       spec:
-                        script: echo "Hi Gopi"
-                    environmentVariables: []
-                    outputVariables: []
-                  timeout: 10m
-        tags: {}
+                        branch: main
+                  description: demo
+              - step:
+                  type: Run
+                  name: demorun
+                  identifier: demorun
+                  spec:
+                    connectorRef: dockerregistery
+                    image: python:3.11
+                    shell: Sh
+                    command: |-
+                      echo "Source Code Downloaded"
+                       
+                      pwd
+                      ls -la
+                       
+                      python --version
+              - step:
+                  type: Run
+                  name: demorunn
+                  identifier: demorunn
+                  spec:
+                    connectorRef: dockerregistery
+                    image: python-3.11
+                    shell: Sh
+                    command: |-
+                      pip install -r requirements.txt
+                       
+                      echo "Reading application.yaml"
+                       
+                      cat architecture/application.yaml
+                       
+                      echo "Executing Resilience Assessment"
+                       
+                      python3 scripts/resilience_check.py
+                       
+                      python3 scripts/policy_check.py
+                       
+                      echo "cat reports/result.json"
+  properties:
+    ci:
+      codebase:
+        connectorRef: pocconnecter
+        build: <+input>
